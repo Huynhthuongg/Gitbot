@@ -1,72 +1,121 @@
 'use client';
+
 import { useEffect, useState } from 'react';
+import { Sidebar } from '@/components/Sidebar';
+import { Header } from '@/components/Header';
+import { DiffViewer } from '@/components/DiffViewer';
+import { Stats } from '@/components/Stats';
+import { FileFilter } from '@/components/FileFilter';
+import { ApprovalPanel } from '@/components/ApprovalPanel';
+
+interface DiffLine {
+  type: 'addition' | 'deletion' | 'neutral';
+  content: string;
+  line_num: number;
+}
+
+interface FileDiff {
+  file_path: string;
+  lines: DiffLine[];
+}
 
 export default function GitBotDiffPage() {
-  const [diffData, setDiffData] = useState<any[]>([]);
+  const [diffData, setDiffData] = useState<FileDiff[]>([]);
+  const [filteredFiles, setFilteredFiles] = useState<FileDiff[]>([]);
+  const [approvalStatus, setApprovalStatus] = useState<'pending' | 'approved' | 'rejected'>('pending');
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Gọi API từ Backend Go
+    // Fetch từ Backend Go
     fetch('http://localhost:8080/api/v1/diff')
-      .then(res => res.json())
-      .then(data => setDiffData(data))
-      .catch(err => console.error(err));
+      .then((res) => res.json())
+      .then((data) => {
+        setDiffData(data);
+        setFilteredFiles(data);
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        console.error('[v0] Error fetching diff:', err);
+        setIsLoading(false);
+      });
   }, []);
 
-  return (
-    <div className="min-h-screen bg-gray-900 text-gray-100 font-sans">
-      {/* HEADER: Responsive từ PC đến Mobile */}
-      <header className="border-b border-gray-800 p-4 sticky top-0 bg-gray-950 z-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-        <div>
-          <span className="bg-green-600 text-xs font-bold px-2 py-1 rounded-full text-white mr-2">Open</span>
-          <h1 className="text-lg font-bold inline-block">PR #124: Tối ưu cơ chế bảo mật Login</h1>
-        </div>
-        <button className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg text-sm transition-all active:scale-95">
-          Approve Code
-        </button>
-      </header>
+  const handleFilterChange = (filteredFilePaths: string[]) => {
+    const filtered = diffData.filter((file) => filteredFilePaths.includes(file.file_path));
+    setFilteredFiles(filtered);
+  };
 
-      {/* BODY CONTAINER */}
-      <main className="p-2 sm:p-6 max-w-7xl mx-auto">
-        {diffData.map((file, fIdx) => (
-          <div key={fIdx} className="mb-6 border border-gray-800 rounded-lg overflow-hidden bg-gray-950">
-            {/* Thanh tiêu đề file */}
-            <div className="bg-gray-900 px-4 py-3 border-b border-gray-800 text-sm font-mono text-gray-300 truncate">
-              📄 {file.file_path}
+  const calculateStats = () => {
+    let additions = 0;
+    let deletions = 0;
+
+    diffData.forEach((file) => {
+      file.lines.forEach((line) => {
+        if (line.type === 'addition') additions++;
+        if (line.type === 'deletion') deletions++;
+      });
+    });
+
+    return {
+      filesChanged: diffData.length,
+      additions,
+      deletions,
+      commits: 3,
+    };
+  };
+
+  const stats = calculateStats();
+  const filePaths = diffData.map((f) => f.file_path);
+
+  // Transform data to match DiffViewer interface
+  const viewerFiles = filteredFiles.map((file) => ({
+    filePath: file.file_path,
+    lines: file.lines,
+    additions: file.lines.filter((l) => l.type === 'addition').length,
+    deletions: file.lines.filter((l) => l.type === 'deletion').length,
+  }));
+
+  return (
+    <div className="min-h-screen bg-slate-950 text-slate-100">
+      <Sidebar />
+      <Header prTitle="Optimize security mechanism for Login" status={approvalStatus} />
+
+      <main className="ml-0 md:ml-64 pt-24 pb-32 px-4 md:px-6">
+        <div className="max-w-7xl mx-auto space-y-6">
+          {/* Stats */}
+          <Stats {...stats} />
+
+          {/* Main content grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            {/* Filter sidebar */}
+            <div className="lg:col-span-1">
+              <FileFilter files={filePaths} onFilterChange={handleFilterChange} />
             </div>
 
-            {/* Vùng hiển thị Code Diff - Ép Unified View trên Mobile */}
-            <div className="overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed">
-              <div className="min-w-full table">
-                {file.lines.map((line: any, lIdx: number) => {
-                  // Định dạng màu sắc dựa vào loại dòng (Thêm/Xóa/Giữ nguyên)
-                  let rowBg = "hover:bg-gray-900";
-                  let textColor = "text-gray-400";
-                  if (line.type === "addition") {
-                    rowBg = "bg-green-950/40 hover:bg-green-900/40 border-l-4 border-green-500";
-                    textColor = "text-green-300";
-                  } else if (line.type === "deletion") {
-                    rowBg = "bg-red-950/40 hover:bg-red-900/40 border-l-4 border-red-500";
-                    textColor = "text-red-300";
-                  }
-
-                  return (
-                    <div key={lIdx} className={`table-row ${rowBg}`}>
-                      {/* Số dòng */}
-                      <div className="table-cell text-gray-600 text-right pr-4 pl-2 select-none w-10 border-r border-gray-800/50">
-                        {line.line_num}
-                      </div>
-                      {/* Nội dung code - word-break chống vỡ khung màn hình điện thoại */}
-                      <div className={`table-cell pl-4 pr-2 whitespace-pre-wrap break-all ${textColor}`}>
-                        {line.content}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+            {/* Diff viewer */}
+            <div className="lg:col-span-3">
+              {isLoading ? (
+                <div className="flex items-center justify-center py-12">
+                  <p className="text-slate-400">Loading diff...</p>
+                </div>
+              ) : filteredFiles.length === 0 ? (
+                <div className="flex items-center justify-center py-12 border border-slate-700 rounded-lg bg-slate-900/50">
+                  <p className="text-slate-400">No files match your filters</p>
+                </div>
+              ) : (
+                <DiffViewer files={viewerFiles} />
+              )}
             </div>
           </div>
-        ))}
+        </div>
       </main>
+
+      {/* Approval panel */}
+      <ApprovalPanel
+        currentStatus={approvalStatus}
+        onApprove={() => setApprovalStatus('approved')}
+        onRequestChanges={() => setApprovalStatus('rejected')}
+      />
     </div>
   );
 }
