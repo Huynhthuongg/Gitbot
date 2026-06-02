@@ -34,6 +34,7 @@ import SchemaDiagram from './components/SchemaDiagram';
 import InfrastructureMap from './components/InfrastructureMap';
 import RolloutChart from './components/RolloutChart';
 import CommandPalette from './components/CommandPalette';
+import { Analytics } from '@vercel/analytics/react';
 
 export default function App() {
   // Navigation / Viewport simulation mode
@@ -894,6 +895,7 @@ export default function App() {
         onRefreshPipelines={handleWorkflowRefresh}
       />
 
+      <Analytics />
     </div>
   );
 }
