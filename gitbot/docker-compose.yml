@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: gitbot_admin
+      POSTGRES_PASSWORD: SecretPassword123
+      POSTGRES_DB: gitbot_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  backend:
+    image: golang:1.24-alpine
+    volumes:
+      - ./backend:/app
+      - git_repos:/data/repos
+    working_dir: /app
+    ports:
+      - "8080:8080"
+    command: sh -c "go mod tidy && go run main.go"
+    depends_on:
+      - postgres
+
+  frontend:
+    image: node:20-alpine
+    volumes:
+      - ./frontend:/app
+    working_dir: /app
+    ports:
+      - "3000:3000"
+    command: sh -c "npm install && npm run dev"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8080
+
+volumes:
+  pgdata:
+  git_repos:
