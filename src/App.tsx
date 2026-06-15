@@ -9,7 +9,6 @@ import {
   GitPullRequest,
   Settings,
   Bell,
-  Cpu,
   Smartphone,
   Monitor,
   Database,
@@ -242,8 +241,8 @@ export default function App() {
       {/* Global Application Nav-Header */}
       <header className="bg-[#0b0f19]/90 border-b border-slate-900 sticky top-0 z-40 backdrop-blur-md px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-gradient-to-br from-indigo-500 to-emerald-405 text-white rounded-lg shadow-md shadow-indigo-900/20">
-            <Cpu className="w-5 h-5 text-emerald-300" />
+          <div className="h-10 w-10 rounded-2xl border border-sky-400/20 bg-slate-950 p-1.5 shadow-lg shadow-sky-950/30">
+            <img src="/gitbot-logo.svg" alt="GitBot logo" className="h-full w-full" />
           </div>
           <div>
             <div className="flex items-center gap-2">
