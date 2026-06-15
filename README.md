@@ -99,4 +99,4 @@ Mở ứng dụng và chọn tab **Wiki** để xem trang giới thiệu tài li
 
 ## 📄 License
 
-Apache-2.0
+Apache-2.0 https://docs.github.com/en/pull-requests/collaborating-with-pull-requests
