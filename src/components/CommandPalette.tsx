@@ -5,16 +5,16 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { 
-  Search, 
-  Folder, 
-  GitPullRequest, 
-  Terminal, 
-  Settings, 
-  X, 
-  Monitor, 
-  Smartphone, 
-  Activity, 
+import {
+  Search,
+  Folder,
+  GitPullRequest,
+  Terminal,
+  Settings,
+  X,
+  Monitor,
+  Smartphone,
+  Activity,
   FileText,
   ChevronRight,
   Sparkles,
@@ -32,8 +32,8 @@ interface CommandPaletteProps {
   onSelectPR: (repoId: number, prId: number, targetFilePath?: string) => void;
   viewportMode: 'desktop' | 'mobile';
   setViewportMode: (mode: 'desktop' | 'mobile') => void;
-  activeWorkspaceTab: 'pr' | 'pipeline' | 'docs';
-  setActiveWorkspaceTab: (tab: 'pr' | 'pipeline' | 'docs') => void;
+  activeWorkspaceTab: 'wiki' | 'dashboard' | 'pr' | 'pipeline' | 'docs';
+  setActiveWorkspaceTab: (tab: 'wiki' | 'dashboard' | 'pr' | 'pipeline' | 'docs') => void;
   onRefreshPipelines: () => void;
 }
 
@@ -74,29 +74,29 @@ export default function CommandPalette({
 
   // Complete list of PRs across all repositories to search globally
   const allPullRequests: PullRequest[] = [
-    { 
-      id: 124, 
-      repo_id: 1, 
-      title: "Tối ưu hóa parser đọc file yaml và sửa lỗi thực thi lệnh tùy ý", 
-      source_branch: "feature/optimize-yaml-parser", 
-      target_branch: "main", 
-      status: "open" 
+    {
+      id: 124,
+      repo_id: 1,
+      title: "Tối ưu hóa parser đọc file yaml và sửa lỗi thực thi lệnh tùy ý",
+      source_branch: "feature/optimize-yaml-parser",
+      target_branch: "main",
+      status: "open"
     },
-    { 
-      id: 125, 
-      repo_id: 1, 
-      title: "Sửa cơ chế SSH Handshake timeout và ghi nhớ session", 
-      source_branch: "bugfix/ssh-timeout", 
-      target_branch: "main", 
-      status: "merged" 
+    {
+      id: 125,
+      repo_id: 1,
+      title: "Sửa cơ chế SSH Handshake timeout và ghi nhớ session",
+      source_branch: "bugfix/ssh-timeout",
+      target_branch: "main",
+      status: "merged"
     },
-    { 
-      id: 201, 
-      repo_id: 2, 
-      title: "Cập nhật Service Worker phục vụ chế độ cài đặt offline PWA", 
-      source_branch: "feature/pwa-support", 
-      target_branch: "main", 
-      status: "open" 
+    {
+      id: 201,
+      repo_id: 2,
+      title: "Cập nhật Service Worker phục vụ chế độ cài đặt offline PWA",
+      source_branch: "feature/pwa-support",
+      target_branch: "main",
+      status: "open"
     }
   ];
 
@@ -110,6 +110,28 @@ export default function CommandPalette({
 
   // Actions
   const actions: PaletteAction[] = [
+    {
+      id: 'tab-wiki',
+      category: 'ACTION',
+      title: "Mở Wiki GitBot",
+      subtitle: "Xem tài liệu vận hành, CI/CD, bảo mật và checklist deploy",
+      icon: FileText,
+      run: () => {
+        setActiveWorkspaceTab('wiki');
+        onClose();
+      }
+    },
+    {
+      id: 'tab-dashboard',
+      category: 'ACTION',
+      title: "Xem Dashboard Tổng Quan",
+      subtitle: "Theo dõi PR, pipeline, bảo mật và rollout trong một màn hình",
+      icon: Sparkles,
+      run: () => {
+        setActiveWorkspaceTab('dashboard');
+        onClose();
+      }
+    },
     {
       id: 'tab-pr',
       category: 'ACTION',
@@ -264,7 +286,7 @@ export default function CommandPalette({
   // Filter items
   const normalizedQuery = searchQuery.toLowerCase().trim();
 
-  const filteredRepos = repos.filter(repo => 
+  const filteredRepos = repos.filter(repo =>
     repo.name.toLowerCase().includes(normalizedQuery) ||
     repo.description.toLowerCase().includes(normalizedQuery) ||
     repo.language.toLowerCase().includes(normalizedQuery)
@@ -388,8 +410,8 @@ export default function CommandPalette({
   // Motion variants for items
   const itemVariants = {
     hidden: { opacity: 0, y: 6 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       y: 0,
       transition: { type: 'spring', stiffness: 500, damping: 30 }
     },
@@ -399,7 +421,7 @@ export default function CommandPalette({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div 
+        <div
           className="fixed inset-0 z-50 flex items-start justify-center pt-[15vh] px-4 overflow-hidden"
         >
           {/* Backdrop Blur overlay with motion */}
@@ -434,7 +456,7 @@ export default function CommandPalette({
                 className="w-full bg-transparent text-sm text-slate-100 placeholder-slate-500 outline-none border-none py-1.5 focus:ring-0"
               />
               {searchQuery && (
-                <button 
+                <button
                   onClick={() => setSearchQuery('')}
                   className="p-1 hover:bg-slate-800 rounded text-slate-400 hover:text-slate-200 transition-colors cursor-pointer"
                 >
@@ -450,7 +472,7 @@ export default function CommandPalette({
             <div className="flex-1 overflow-y-auto p-2 space-y-4 custom-scrollbar max-h-[350px]">
               <AnimatePresence mode="popLayout">
                 {combinedItems.length === 0 ? (
-                  <motion.div 
+                  <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
@@ -464,7 +486,7 @@ export default function CommandPalette({
                   <motion.div layout className="space-y-1">
                     {combinedItems.map((item, idx) => {
                       const isSelected = idx === selectedIndex;
-                      
+
                       // REPO Render
                       if (item.type === 'REPO') {
                         const r = item.data;
@@ -550,8 +572,8 @@ export default function CommandPalette({
 
                             <div className="flex items-center gap-3 truncate relative z-10">
                               <GitPullRequest className={`w-4 h-4 shrink-0 ${
-                                pr.status === 'merged' 
-                                  ? 'text-purple-400' 
+                                pr.status === 'merged'
+                                  ? 'text-purple-400'
                                   : isSelected ? 'text-emerald-400' : 'text-slate-500'
                               }`} />
                               <div className="flex flex-col truncate">
