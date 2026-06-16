@@ -1,0 +1,29 @@
+Choose an open source license
+Chọn giấy phép mã nguồn mở
+Giấy phép mã nguồn mở bảo vệ cả người đóng góp và người dùng. Các doanh nghiệp và nhà phát triển am hiểu sẽ không tham gia vào một dự án nào nếu không có sự bảo vệ này.
+
+{ Tình huống của bạn được mô tả chính xác nhất bằng các lựa chọn sau đây? }
+Tôi cần làm việc trong một cộng đồng.
+Hãy sử dụng giấy phép được cộng đồng mà bạn đang đóng góp hoặc phụ thuộc vào ưa chuộng. Dự án của bạn sẽ hoàn toàn phù hợp.
+
+Nếu bạn có một thư viện phụ thuộc không có giấy phép, hãy yêu cầu người duy trì thư viện đó thêm giấy phép .
+
+Tôi muốn nó đơn giản và dễ dãi.
+Giấy phép MIT ngắn gọn và đi thẳng vào vấn đề. Nó cho phép mọi người làm hầu hết mọi thứ họ muốn với dự án của bạn, chẳng hạn như tạo và phân phối các phiên bản mã nguồn đóng.
+
+Babel , .NET và Rails sử dụng giấy phép MIT.
+
+Tôi quan tâm đến việc chia sẻ những cải tiến.
+Giấy phép GNU GPLv3 cũng cho phép mọi người làm hầu hết mọi thứ họ muốn với dự án của bạn, ngoại trừ việc phân phối các phiên bản mã nguồn đóng.
+
+Ansible , Bash và uBlock Origin sử dụng giấy phép GNU GPLv3.
+
+{ Nếu không có giải pháp nào trong số này hiệu quả với tôi thì sao? }
+Dự án của tôi không phải là phần mềm.
+Việc đó cần có giấy phép .
+
+Tôi muốn có nhiều lựa chọn hơn.
+Hiện có thêm nhiều loại giấy phép khác .
+
+Tôi không muốn chọn loại giấy phép nào.
+Đây là những gì sẽ xảy ra nếu bạn không làm vậy .
